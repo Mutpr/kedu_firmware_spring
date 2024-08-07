@@ -5,16 +5,17 @@ import com.kedu.firmware.services.PrivateMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/messages")
 public class PrivateMessageController {
+
+    private static final Logger logger = Logger.getLogger(PrivateMessageController.class.getName());
 
     @Autowired
     private PrivateMessageService privateMessageService;
@@ -26,38 +27,36 @@ public class PrivateMessageController {
     public ResponseEntity<String> sendMessage(@RequestBody PrivateMessageDTO message) {
         try {
             privateMessageService.saveMessage(message);
-            // WebSocket을 통해 메시지 전송
             messagingTemplate.convertAndSend("/topic/public", message);
-            return ResponseEntity.ok("Message saved and broadcasted successfully");
+            return ResponseEntity.ok("메시지가 성공적으로 저장되고 브로드캐스트되었습니다.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving message");
+            logger.severe("메시지 저장 오류: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("메시지 저장 오류: " + e.getMessage());
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<PrivateMessageDTO>> getAllMessages() {
-        try {
-            List<PrivateMessageDTO> messages = privateMessageService.getAllMessages();
-            return ResponseEntity.ok(messages);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        List<PrivateMessageDTO> messages = privateMessageService.getAllMessages();
+        return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PrivateMessageDTO> getMessageById(@PathVariable int id) {
-        try {
-            PrivateMessageDTO message = privateMessageService.getMessageById(id);
-            return ResponseEntity.ok(message);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        PrivateMessageDTO message = privateMessageService.getMessageById(id);
+        if (message != null) {
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @MessageMapping("/sendMessage")
-    @SendTo("/topic/public")
-    public PrivateMessageDTO broadcastMessage(PrivateMessageDTO message) {
-        privateMessageService.saveMessage(message);
-        return message;
+    @GetMapping("/chat/{sender}/{receiver}")
+    public ResponseEntity<List<PrivateMessageDTO>> getMessagesBetweenParticipants(
+            @PathVariable String sender,
+            @PathVariable String receiver) {
+
+        List<PrivateMessageDTO> messages = privateMessageService.getMessagesByParticipants(sender, receiver);
+        return ResponseEntity.ok(messages);
     }
 }

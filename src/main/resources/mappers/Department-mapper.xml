@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Department">
+
+    <!-- 모든 부서의 정보를 조회하는 쿼리 -->
+    <select id="getDepartments" resultType="com.kedu.firmware.DTO.DepartmentDTO">
+        SELECT department_seq, department_unit_seq, department_captain_user_seq, department_title, department_code, department_description
+        FROM department
+    </select>
+
+    <!-- 특정 유닛 코드에 따라 부서 정보를 조회하는 쿼리 -->
+    <select id="getDepartmentsByUnitCode" parameterType="String" resultType="com.kedu.firmware.DTO.DepartmentDTO">
+        SELECT department_seq, department_unit_seq, department_captain_user_seq, department_title, department_code, department_description
+        FROM department
+        WHERE UPPER(TRIM(department_unit_seq)) = UPPER(TRIM(#{unitCode}))
+    </select>
+
+    <!-- 특정 부서 코드에 따라 부서 정보를 조회하는 쿼리 -->
+    <select id="getDepartmentByCode" parameterType="String" resultType="com.kedu.firmware.DTO.DepartmentDTO">
+        SELECT department_seq, department_unit_seq, department_captain_user_seq, department_title, department_code, department_description
+        FROM department
+        WHERE department_code = #{departmentCode}
+    </select>
+
+    <!-- 특정 부서 제목에 따라 부서 정보를 조회하는 쿼리 -->
+    <select id="getDepartmentByTitle" parameterType="String" resultType="com.kedu.firmware.DTO.DepartmentDTO">
+        SELECT department_seq, department_unit_seq, department_captain_user_seq, department_title, department_code, department_description
+        FROM department
+        WHERE department_title = #{departmentTitle}
+    </select>
+
+    <!-- 부서 정보를 삽입하는 쿼리 -->
+    <insert id="insertDepartment" parameterType="com.kedu.firmware.DTO.DepartmentDTO" useGeneratedKeys="true" keyProperty="department_seq">
+        INSERT INTO department (department_unit_seq, department_captain_user_seq, department_title, department_code, department_description)
+        VALUES (#{department_unit_seq}, #{department_captain_user_seq}, #{department_title}, #{department_code}, #{department_description})
+    </insert>
+</mapper>

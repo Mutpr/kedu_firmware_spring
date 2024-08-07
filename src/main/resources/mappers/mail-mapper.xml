@@ -4,7 +4,56 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Mail">
-	<insert id="insertMail">
-  		insert into mail values(mail_seq.nextval, 1, 1, #{mail_title}, #{mail_contents}, sysdate, sysdate, null, 'N', 'N', 'Y')
+	<insert id="insertMail" useGeneratedKeys="true" keyProperty="mail_seq" keyColumn="MAIL_SEQ">
+  		insert into mail values(mail_seq.nextval, #{mail_sender_user_seq}, #{mailbox_seq}, #{mail_title}, #{mail_content}, sysdate, sysdate, null, 'N', 'N', 'Y')
   	</insert>
+  	
+  	<!-- 메일 회신 -->
+  	<insert id="replyMail"  useGeneratedKeys="true" keyProperty="mail_seq" keyColumn="MAIL_SEQ">
+  		insert into mail values(mail_seq.nextval, #{mail_sender_user_seq}, #{mailbox_seq}, #{mail_title}, #{mail_content}, sysdate, sysdate, null, 'N', 'N', 'Y')
+  	</insert>
+  	
+  	<!-- 메일 ID로 메일 가져오기 (회신 처리용) -->
+    <select id="getMailById" resultType="com.kedu.firmware.DTO.MailDTO">
+        select * from mail where mail_seq = #{mailId}
+    </select>
+  	
+  	<!-- 모든 메일함의 첫번째 메일 목록 가져오기 -->
+  	<!-- 본인이 작성하거나, 받은 메일만 목록에서 확인 -->
+  	<select id="selectAll" resultType="com.kedu.firmware.DTO.MailDTO">
+		  		SELECT m.* 
+		FROM mail m 
+		INNER JOIN mail_carbon_copy mcc ON m.mail_seq = mcc.mail_seq
+		INNER JOIN users u ON u.users_email = mcc.mail_carbon_copy_receiver
+		WHERE m.mail_seq = (
+		  SELECT MIN(mail_seq) 
+		  FROM mail 
+		  WHERE mailbox_seq = m.mailbox_seq
+		)
+		AND (m.mail_sender_user_seq = (SELECT users_seq FROM users WHERE users_email = #{Email})
+		OR mcc.mail_carbon_copy_receiver = #{Email})
+		ORDER BY m.mail_seq DESC
+
+  	</select>
+  	
+  	<select id="selectBySeq" resultType="com.kedu.firmware.DTO.MailDTO">
+  		select * from mail where mailbox_seq = (
+  			select mailbox_seq from mail where mail_seq = #{mail_seq}
+  		) order by 1 desc
+  	</select>
+  	
+  	<delete id="deleteSelectedMail">
+  		delete from mail where mail_seq = #{mail_seq}
+  	</delete>
+  	
+  	<!-- 선택된 메일 전체 삭제 -->
+  	<delete id="deleteSelectedMails">
+  		delete from mail where mailbox_seq = (	
+			select mailbox_seq from mail where mail_seq = #{mail_seq}
+		)
+  	</delete>
+  	
+  	<select id="selectSenderInfo">
+  		select * from users where user_seq = #{sender_user_seq}
+  	</select>
 </mapper>

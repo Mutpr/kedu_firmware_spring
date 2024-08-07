@@ -35,4 +35,6 @@ public class BoardService {
         return boardDAO.updateBySeq(dto);
     }
 
+
+
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Rank">
+
+    <!-- 모든 직급 정보를 조회하는 쿼리 -->
+    <select id="selectAllRanks" resultType="com.kedu.firmware.DTO.RankDTO">
+        SELECT rank_seq, rank_code, rank_title
+        FROM rank
+    </select>
+
+    <!-- 직급 시퀀스를 통해 직급 정보를 조회하는 쿼리 -->
+    <select id="selectRankById" parameterType="int" resultType="com.kedu.firmware.DTO.RankDTO">
+        SELECT rank_seq, rank_code, rank_title
+        FROM rank
+        WHERE rank_seq = #{rankSeq}
+    </select>
+
+    <!-- 새로운 직급 정보를 삽입하는 쿼리 -->
+    <insert id="insertRank" parameterType="com.kedu.firmware.DTO.RankDTO">
+        INSERT INTO rank (rank_seq, rank_code, rank_title)
+        VALUES (#{rank_seq}, #{rank_code}, #{rank_title})
+    </insert>
+
+    <!-- 직급 정보를 업데이트하는 쿼리 -->
+    <update id="updateRank" parameterType="com.kedu.firmware.DTO.RankDTO">
+        UPDATE rank
+        SET rank_code = #{rank_code},
+            rank_title = #{rank_title}
+        WHERE rank_seq = #{rank_seq}
+    </update>
+
+    <!-- 직급 정보를 삭제하는 쿼리 -->
+    <delete id="deleteRank" parameterType="int">
+        DELETE FROM rank WHERE rank_seq = #{rankSeq}
+    </delete>
+
+</mapper>

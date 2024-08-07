@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reply">
+    <insert id="insert">
+        INSERT INTO board_reply (reply_seq, reply_userName, board_seq, reply_contents, reply_reg_date)
+        VALUES (board_reply_seq.nextval, #{reply_userName}, #{board_seq}, #{reply_contents}, sysdate)
+    </insert>
+
+    <select id="selectAll" resultType="com.kedu.firmware.DTO.Board_ReplyDTO">
+        SELECT * FROM board_reply
+        WHERE board_seq = #{board_seq} order By reply_reg_date desc
+    </select>
+
+    <update id="updateBySeq" >
+        update board_reply
+        set reply_contents = #{reply_contents} ,
+        reply_reg_date = sysdate
+        where board_seq = #{board_seq} and reply_seq = #{reply_seq}
+    </update>
+
+
+    <delete id="deleteBySeq" >
+        DELETE FROM board_reply
+        WHERE reply_seq = #{reply_seq}
+    </delete>
+</mapper>

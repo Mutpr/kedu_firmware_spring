@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Employee">
+
+    <!-- 직원 정보를 삽입하는 쿼리 -->
+    <insert id="insertEmployee" parameterType="com.kedu.firmware.DTO.EmployeeDTO">
+        INSERT INTO employee (employee_seq, user_seq, users_name, department_seq, department_title, unit_seq, unit_title, rank_seq, rank_title, employee_code, employee_hire_date, employee_leave_date, is_employee_validate)
+        VALUES (employee_seq.NEXTVAL, #{user_seq,jdbcType=INTEGER}, #{users_name,jdbcType=VARCHAR}, 
+                #{department_seq,jdbcType=INTEGER}, #{department_title,jdbcType=VARCHAR}, 
+                #{unit_seq,jdbcType=INTEGER}, #{unit_title,jdbcType=VARCHAR},
+                #{rank_seq,jdbcType=INTEGER}, #{rank_title,jdbcType=VARCHAR},
+                #{employee_code,jdbcType=VARCHAR}, 
+                #{employee_hire_date,jdbcType=TIMESTAMP}, #{employee_leave_date,jdbcType=TIMESTAMP}, 
+                #{is_employee_validate,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 직원 시퀀스를 통해 직원 정보를 조회하는 쿼리 -->
+    <select id="selectBySeq" parameterType="int" resultType="com.kedu.firmware.DTO.EmployeeDTO">
+        SELECT 
+            e.employee_seq, e.user_seq, e.department_seq, d.department_title, 
+            e.unit_seq, u.unit_title, e.rank_seq, r.rank_title,
+            us.users_name, e.employee_code, e.employee_hire_date, 
+            e.employee_leave_date, e.is_employee_validate
+        FROM 
+            employee e
+        JOIN 
+            department d ON e.department_seq = d.department_seq
+        JOIN 
+            unit u ON e.unit_seq = u.unit_seq
+        JOIN 
+            rank r ON e.rank_seq = r.rank_seq
+        JOIN
+            users us ON e.user_seq = us.users_seq
+        WHERE 
+            e.employee_seq = #{employee_seq}
+    </select>
+
+    <!-- 직원 정보를 업데이트하는 쿼리 -->
+    <update id="updateEmployee" parameterType="com.kedu.firmware.DTO.EmployeeDTO">
+        UPDATE employee 
+        SET 
+            user_seq = #{user_seq,jdbcType=INTEGER},
+            department_seq = #{department_seq,jdbcType=INTEGER},
+            unit_seq = #{unit_seq,jdbcType=INTEGER},
+            rank_seq = #{rank_seq,jdbcType=INTEGER},
+            employee_code = #{employee_code,jdbcType=VARCHAR},
+            employee_hire_date = #{employee_hire_date,jdbcType=TIMESTAMP},
+            employee_leave_date = #{employee_leave_date,jdbcType=TIMESTAMP},
+            is_employee_validate = #{is_employee_validate,jdbcType=VARCHAR}
+        WHERE 
+            employee_seq = #{employee_seq}
+    </update>
+
+    <!-- 직원 정보를 삭제하는 쿼리 -->
+    <delete id="deleteEmployee" parameterType="int">
+        DELETE FROM employee WHERE employee_seq = #{employee_seq}
+    </delete>
+
+</mapper>

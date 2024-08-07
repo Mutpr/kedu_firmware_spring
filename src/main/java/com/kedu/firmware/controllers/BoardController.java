@@ -15,14 +15,14 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    //    insert
+    //    입력
     @PostMapping
     public ResponseEntity<Void> post(@RequestBody BoardDTO dto) {
         boardService.post(dto);
         return ResponseEntity.ok().build();
     }
 
-    //    list
+    //    리스트 
     @GetMapping
     public ResponseEntity<List<BoardDTO>> get() {
         List<BoardDTO> boards = boardService.getBoards();
@@ -39,12 +39,14 @@ public class BoardController {
         }
     }
 
+//    삭제
     @DeleteMapping("/{seq}")
     public ResponseEntity<Void> deleteBySeq(@PathVariable int seq) {
         boardService.deleteBySeq(seq);
         return ResponseEntity.ok().build();
     }
 
+//    업데이트
     @PutMapping("/{seq}")
     public ResponseEntity<Void> updateBySeq(@RequestBody BoardDTO dto, @PathVariable int seq) {
         // seq 값을 dto에 설정 (DTO에 seq 필드가 있어야 합니다)

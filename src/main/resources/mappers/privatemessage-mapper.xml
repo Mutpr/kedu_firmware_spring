@@ -4,16 +4,36 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="privateMessage">
-    <insert id="insert">
-        INSERT INTO private_messages (sender_username, receiver_username, content, send_date)
-        VALUES (#{senderusername, jdbcType=VARCHAR}, #{receiverusername, jdbcType=VARCHAR}, #{content, jdbcType=VARCHAR}, #{sendDate, jdbcType=TIMESTAMP})
+    <!-- 메시지를 데이터베이스에 삽입합니다 -->
+    <insert id="insert" parameterType="com.kedu.firmware.DTO.PrivateMessageDTO">
+        INSERT INTO private_messages (
+            message_seq, sender_username, receiver_username, content, send_date
+        )
+        VALUES (
+            message_seq.NEXTVAL,  <!-- 시퀀스를 사용하여 message_seq 값을 자동으로 증가 -->
+            #{sender_username, jdbcType=VARCHAR}, 
+            #{receiver_username, jdbcType=VARCHAR}, 
+            #{content, jdbcType=VARCHAR}, 
+            #{send_date, jdbcType=TIMESTAMP}
+        )
     </insert>
 
     <select id="selectAll" resultType="com.kedu.firmware.DTO.PrivateMessageDTO">
-        SELECT * FROM private_messages
+        SELECT message_seq, sender_username, receiver_username, content, send_date 
+        FROM private_messages
     </select>
 
     <select id="selectById" parameterType="int" resultType="com.kedu.firmware.DTO.PrivateMessageDTO">
-        SELECT * FROM private_messages WHERE id = #{id}
+        SELECT message_seq, sender_username, receiver_username, content, send_date 
+        FROM private_messages 
+        WHERE message_seq = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByParticipants" resultType="com.kedu.firmware.DTO.PrivateMessageDTO">
+        SELECT message_seq, sender_username, receiver_username, content, send_date 
+        FROM private_messages
+        WHERE (sender_username = #{sender} AND receiver_username = #{receiver})
+           OR (sender_username = #{receiver} AND receiver_username = #{sender})
+        ORDER BY send_date
     </select>
 </mapper>
