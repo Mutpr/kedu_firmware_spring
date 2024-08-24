@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Event">
+
+    <!-- Event 테이블과 EventDTO 매핑 -->
+    <resultMap id="EventResultMap" type="com.kedu.firmware.DTO.EventDTO">
+        <id property="eventsSeq" column="events_seq"/>
+        <result property="calendarsSeq" column="calendars_seq"/>
+        <result property="eventsTitle" column="events_title"/>
+        <result property="eventsDescription" column="events_description"/>
+        <result property="eventsLocation" column="events_location"/>
+        <result property="eventsStartDate" column="events_start_date"/>
+        <result property="eventsEndDate" column="events_end_date"/>
+        <result property="eventsIsDraggable" column="events_is_draggable"/>
+        <result property="eventsColor" column="events_color"/>
+        <result property="eventsCreatedAt" column="events_created_at"/>
+        <result property="eventsUpdatedAt" column="events_updated_at"/>
+    </resultMap>
+
+    <!-- 특정 이벤트 ID로 이벤트를 조회하는 쿼리 -->
+    <select id="getEventById" parameterType="long" resultMap="EventResultMap">
+        SELECT * FROM Events WHERE events_seq = #{eventsSeq,jdbcType=BIGINT}
+    </select>
+
+    <!-- 특정 캘린더 ID로 이벤트 목록을 조회하는 쿼리 -->
+    <select id="getEventsByCalendarId" parameterType="long" resultMap="EventResultMap">
+        SELECT * FROM Events WHERE calendars_seq = #{calendarsSeq,jdbcType=BIGINT}
+    </select>
+
+    <!-- 새로운 이벤트를 삽입하는 쿼리 -->
+    <insert id="insertEvent" parameterType="com.kedu.firmware.DTO.EventDTO">
+        INSERT INTO Events 
+        (events_seq, calendars_seq, events_title, events_description, events_location, 
+         events_start_date, events_end_date, events_is_draggable, events_color, 
+         events_created_at, events_updated_at)
+        VALUES 
+        (events_seq.NEXTVAL,
+         #{calendarsSeq,jdbcType=BIGINT}, #{eventsTitle,jdbcType=VARCHAR}, #{eventsDescription,jdbcType=VARCHAR}, 
+         #{eventsLocation,jdbcType=VARCHAR}, #{eventsStartDate,jdbcType=TIMESTAMP}, #{eventsEndDate,jdbcType=TIMESTAMP}, 
+         #{eventsIsDraggable,jdbcType=CHAR}, #{eventsColor,jdbcType=VARCHAR},
+         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- 기존 이벤트를 업데이트하는 쿼리 -->
+    <update id="updateEvent" parameterType="com.kedu.firmware.DTO.EventDTO">
+        UPDATE Events SET
+        calendars_seq = #{calendarsSeq,jdbcType=BIGINT},
+        events_title = #{eventsTitle,jdbcType=VARCHAR},
+        events_description = #{eventsDescription,jdbcType=VARCHAR},
+        events_location = #{eventsLocation,jdbcType=VARCHAR},
+        events_start_date = #{eventsStartDate,jdbcType=TIMESTAMP},
+        events_end_date = #{eventsEndDate,jdbcType=TIMESTAMP},
+        events_is_draggable = #{eventsIsDraggable,jdbcType=CHAR},
+        events_color = #{eventsColor,jdbcType=VARCHAR},
+        events_updated_at = CURRENT_TIMESTAMP
+        WHERE events_seq = #{eventsSeq,jdbcType=BIGINT}
+    </update>
+
+    <!-- 특정 이벤트 ID로 이벤트를 삭제하는 쿼리 -->
+    <delete id="deleteEvent" parameterType="long">
+        DELETE FROM Events WHERE events_seq = #{eventsSeq,jdbcType=BIGINT}
+    </delete>
+    
+    <!-- 모든 이벤트를 조회하는 쿼리 -->
+    <select id="getAllEvents" resultMap="EventResultMap">
+        SELECT * FROM Events
+    </select>
+
+</mapper>

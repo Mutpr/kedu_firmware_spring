@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mailattachment">
+  
+  <!-- 첨부 파일을 DB에 삽입 -->
+  <insert id="insertAttachment" parameterType="com.kedu.firmware.DTO.MailAttachmentDTO">
+    INSERT INTO MAIL_ATTACHMENT 
+    (MAIL_ATTACHMENT_SEQ, MAIL_SEQ, ORIGINAL_FILE_NAME, STORED_FILE_NAME, FILE_SIZE, FILE_TYPE, UPLOAD_DATE)
+    VALUES 
+    (MAIL_ATTACHMENT_SEQ.NEXTVAL, #{mail_seq}, #{original_file_name}, #{stored_file_name}, #{file_size}, #{file_type}, SYSDATE)
+  </insert>
+
+  <!-- 첨부 파일 정보를 가져오기 -->
+  <select id="selectAttachmentById" parameterType="int" resultType="com.kedu.firmware.DTO.MailAttachmentDTO">
+    SELECT 
+      MAIL_ATTACHMENT_SEQ AS mail_attachment_seq,
+      MAIL_SEQ AS mail_seq,
+      ORIGINAL_FILE_NAME AS original_file_name,
+      STORED_FILE_NAME AS stored_file_name,
+      FILE_SIZE AS file_size,
+      FILE_TYPE AS file_type,
+      UPLOAD_DATE AS upload_date
+    FROM 
+      MAIL_ATTACHMENT
+    WHERE 
+      MAIL_ATTACHMENT_SEQ = #{mail_attachment_seq}
+  </select>
+  
+  <!-- 메일에 포함된 모든 첨부 파일 목록 가져오기 -->
+  <select id="selectAttachmentsByMailSeq" parameterType="int" resultType="com.kedu.firmware.DTO.MailAttachmentDTO">
+    SELECT 
+      MAIL_ATTACHMENT_SEQ AS mail_attachment_seq,
+      MAIL_SEQ AS mail_seq,
+      ORIGINAL_FILE_NAME AS original_file_name,
+      STORED_FILE_NAME AS stored_file_name,
+      FILE_SIZE AS file_size,
+      FILE_TYPE AS file_type,
+      UPLOAD_DATE AS upload_date
+    FROM 
+      MAIL_ATTACHMENT
+    WHERE 
+      MAIL_SEQ = #{mail_seq}
+  </select>
+
+  <!-- 첨부 파일 삭제 -->
+  <delete id="deleteAttachment" parameterType="int">
+    DELETE FROM MAIL_ATTACHMENT WHERE MAIL_ATTACHMENT_SEQ = #{mail_attachment_seq}
+  </delete>
+
+</mapper>

@@ -14,13 +14,12 @@
         WHERE board_seq = #{board_seq} order By reply_reg_date desc
     </select>
 
-    <update id="updateBySeq" >
+    <update id="updateBySeq">
         update board_reply
-        set reply_contents = #{reply_contents} ,
+        set reply_contents = #{reply_contents},
         reply_reg_date = sysdate
         where board_seq = #{board_seq} and reply_seq = #{reply_seq}
     </update>
-
 
     <delete id="deleteBySeq" >
         DELETE FROM board_reply

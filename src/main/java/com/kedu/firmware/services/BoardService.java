@@ -19,22 +19,32 @@ public class BoardService {
         boardDAO.insert(dto);
     }
 
+    //List
     public List<BoardDTO> getBoards() {
         return boardDAO.selectAll();
     }
+
+    //    seq List
+    public List<BoardDTO> getSeqBoard(int seq) {
+        return boardDAO.selectAll(seq);
+    }
+
 
     public BoardDTO getBoard(int seq) {
         return boardDAO.selectBySeq(seq);
     }
 
+    //삭제
     public int deleteBySeq(int seq) {
         return boardDAO.deleteBySeq(seq);
     }
 
+    //업데이트
     public int updateBySeq(BoardDTO dto) {
         return boardDAO.updateBySeq(dto);
     }
 
-
-
+    public void incrementViewCount(int board_Seq) {
+        boardDAO.incrementViewCount(board_Seq);
+    }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="category">
+    <select id="selectAll" resultType="com.kedu.firmware.DTO.Board_CategoryDTO">
+        SELECT * FROM board_category
+    </select>
+
+    <select id="selectByCategory" resultType="com.kedu.firmware.DTO.BoardDTO" >
+        SELECT B.BOARD_SEQ,
+        B.BOARD_TITLE,
+        B.BOARD_CONTENTS,
+        B.BOARD_WRITE_DATE,
+        B.BOARD_VIEW_COUNT,
+        B.CATEGORY_SEQ,
+        B.USER_SEQ,
+        U.USERS_NAME,
+        C.*
+        FROM board B
+        LEFT JOIN users U ON B.USER_SEQ = U.USERS_SEQ
+        LEFT JOIN BOOKMARK C ON B.BOARD_SEQ = C.BOARD_SEQ AND B.USER_SEQ = C.USER_SEQ
+        WHERE
+            B.CATEGORY_SEQ = #{category_seq}
+    </select>
+
+    <select id="selectDefaultCategory" resultType="com.kedu.firmware.DTO.Board_CategoryDTO">
+        SELECT * FROM board_category WHERE category_seq = 0
+    </select>
+</mapper>

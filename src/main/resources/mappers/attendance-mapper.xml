@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Attendance">
+
+	 <insert id="insertCheckInTime" parameterType="com.kedu.firmware.DTO.AttendanceDTO">
+    INSERT INTO attendance (
+        attendance_id, 
+        users_seq, 
+        attendance_date, 
+        check_in_time, 
+        check_out_time, 
+        status
+    ) VALUES (
+        attendance_seq.nextval, 
+        #{users_seq}, 
+        sysdate, 
+        #{check_in_time},
+        NULL,
+        '출근'
+    )
+  </insert>
+
+
+	<update id="insertCheckOutTime">
+    <!-- 출석 기록의 퇴근 시간 업데이트 -->
+	    update attendance 
+	    set 
+	        check_out_time = #{check_out_time},
+	        <!-- xml 파서가 잘못 해석하지않도록 CDATA로 감싸서 파서 오류 해결 -->
+	        status = '퇴근' 
+	    where 
+	        TRUNC(attendance_date) = TRUNC(sysdate)
+	        and users_seq = #{users_seq}
+	  </update>
+
+	
+	<select id="checkIfAlreadyCheckedIn" parameterType="int" resultType="com.kedu.firmware.DTO.AttendanceDTO">
+		select check_in_time, check_out_time
+		from attendance
+		where users_seq = #{users_seq}
+		and TRUNC(attendance_date) = TRUNC(sysdate)
+	</select>
+	
+	<!-- 이벤트 조회를 위한 코드 (수정전) -->
+	<!-- <select id="getAttendanceEvents" parameterType="map" resultType="com.kedu.firmware.DTO.AttendanceDTO">
+        SELECT 
+            *
+        FROM attendance
+        WHERE users_seq = #{usersSeq}
+          AND attendance_date BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+        ORDER BY attendance_date
+    </select> -->
+    
+    <!-- 이벤트 조회를 위한 코드 (수정후) -->
+    <select id="getAttendanceEvents" parameterType="map" resultType="com.kedu.firmware.DTO.AttendanceDTO">
+	    SELECT 
+	        a.*,
+	        v.vacation_application_status  
+	    FROM attendance a
+	    LEFT JOIN vacation_application v  
+	    ON a.users_seq = v.vacation_drafter_user_seq  
+	    AND TO_CHAR(a.attendance_date, 'YY/MM/DD') BETWEEN TO_CHAR(v.vacation_start_date, 'YY/MM/DD') AND TO_CHAR(v.vacation_end_date, 'YY/MM/DD')
+	    WHERE a.users_seq = #{usersSeq}
+	      AND TO_CHAR(a.attendance_date, 'YY/MM/DD') BETWEEN TO_CHAR(TO_DATE(#{startDate}, 'YYYY-MM-DD'), 'YY/MM/DD') AND TO_CHAR(TO_DATE(#{endDate}, 'YYYY-MM-DD'), 'YY/MM/DD')
+	    ORDER BY a.attendance_date
+	</select>
+
+    
+    
+
+	<!-- 선택된 달의 근태 정보를 가져오기위한 쿼리문 -->
+	<!-- 특정 달의 모든 출석 정보를 가져온다 -->
+	<select id="getMonthlyAttendance" parameterType="map" resultType="com.kedu.firmware.DTO.AttendanceDTO">
+	    SELECT *
+	    FROM attendance
+	    WHERE users_seq = #{usersSeq}
+	    AND attendance_date BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	    ORDER BY attendance_date
+	</select>
+
+	<!-- 부서 일정 반환을 위한 쿼리 -->
+	<select id="findAttendanceEventsByDepartment" resultType="com.kedu.firmware.DTO.AttendanceDTO">
+    SELECT a.* 
+    FROM attendance a
+    JOIN users u ON a.users_seq = u.users_seq
+    WHERE u.department_code = (
+        SELECT department_code 
+        FROM users 
+        WHERE users_seq = #{usersSeq}
+    )
+    AND TRUNC(a.attendance_date) = TO_DATE(#{date}, 'YY/MM/DD')
+</select>
+
+	<!-- 근태 일정 삽입 (휴가) -->
+	<insert id="insertAttendance" parameterType="com.kedu.firmware.DTO.AttendanceDTO">
+	    INSERT INTO attendance (
+	        attendance_id, 
+	        users_seq, 
+	        attendance_date, 
+	        check_in_time, 
+	        check_out_time, 
+	        status
+	    ) VALUES (
+	        attendance_seq.nextval, 
+	        #{users_seq}, 
+	        #{attendance_date}, 
+	        #{check_in_time}, 
+	        #{check_out_time}, 
+	        #{status}
+	    )
+	</insert>
+
+
+
+		
+	
+</mapper>

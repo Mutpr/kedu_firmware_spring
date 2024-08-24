@@ -36,19 +36,21 @@ public class Board_ReplyController {
 
 
     // 삭제 엔드포인트
-    @DeleteMapping("/replies/{reply_seq}")
+    @DeleteMapping("/{board_seq}/{reply_seq}")
     public ResponseEntity<Void> deleteBySeq(@PathVariable int reply_seq) {
         board_replyService.deleteBySeq(reply_seq);
         return ResponseEntity.ok().build();
     }
 
-    // 업데이트 엔드포인트
-    @PutMapping("/replies/{reply_seq}")
-    public ResponseEntity<Void> updateBySeq(@RequestBody Board_ReplyDTO dto, @PathVariable int reply_seq) {
+    @PutMapping("/{board_seq}/{reply_seq}")
+    public ResponseEntity<Void> updateBySeq(@RequestBody Board_ReplyDTO dto, @PathVariable int board_seq, @PathVariable int reply_seq) {
+        dto.setBoard_seq(board_seq); // 게시물 ID를 DTO에 설정
         dto.setReply_seq(reply_seq); // 댓글 ID를 DTO에 설정
         board_replyService.updateBySeq(dto);
         return ResponseEntity.ok().build();
     }
+
+
 
 
 }

@@ -55,6 +55,21 @@ public class UsersController {
         usersService.memberOut(String.valueOf(userSeq));  
         return ResponseEntity.ok().build();
     }
+    
+    // 사용자 삭제 엔드포인트 (userCode 기반)
+    // userCode로 사용자 삭제 (관리자 계정은 삭제 불가)
+    @DeleteMapping("/code/{userCode}")
+    public ResponseEntity<Void> deleteUserByCode(@PathVariable String userCode) {
+        // userCode를 이용해 사용자 조회
+        UsersDTO user = usersService.findUserByCode(userCode);
+        // 사용자가 관리자일 경우 삭제 제한
+        if (user != null && user.getUsers_is_admin() == 1) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 관리자 삭제 제한
+        }
+        // 관리자가 아닌 경우 사용자 삭제
+        usersService.deleteUserByCode(userCode);  
+        return ResponseEntity.ok().build();
+    }
 
     // 마이페이지 조회 엔드포인트
     // 현재 세션에서 로그인 ID 가져오기
@@ -94,7 +109,18 @@ public class UsersController {
     	
     }
     
-    
-    
+    @GetMapping("/{loginID}/deptprofile")
+    public ResponseEntity<List<Map<String, Object>>> getDepartmentMemberInfoWithProfile(@PathVariable String loginID) {
+    	// loginID에서 departmentPrefix를 추출
+        String departmentPrefix = loginID.split("-")[0];  // 기존 방식과 동일하게 처리
+        System.out.println("departmentPrefix: " + departmentPrefix);
+        System.out.println("excludeLoginID: " + loginID);
+        List<Map<String, Object>> info = usersService.getDepartmentMemberInfoWithProfile(loginID, departmentPrefix);
+        System.out.println(info);
+        if (info.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(info);
+    }    
     
 }

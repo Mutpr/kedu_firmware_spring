@@ -15,9 +15,13 @@ public class BoardDAO {
     public void insert(BoardDTO dto) {
         mybatis.insert("board.insert", dto);
     }
-
+//List
     public List<BoardDTO> selectAll() {
         return mybatis.selectList("board.selectAll");
+    }
+// seqList
+    public List<BoardDTO> selectAll(int seq) {
+        return mybatis.selectList("board.seqSelectAll",seq);
     }
 
     public BoardDTO selectBySeq(int seq) {
@@ -32,4 +36,7 @@ public class BoardDAO {
         return mybatis.update("board.updateBySeq", dto);
     }
 
+    public void incrementViewCount(int board_Seq) {
+        mybatis.update("board.incrementViewCount", board_Seq);
+    }
 }

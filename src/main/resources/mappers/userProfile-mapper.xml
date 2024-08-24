@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserProfile">
+
+    <!-- 사용자 프로필 정보를 사용자 코드로 가져오기 -->
+    <select id="getUserProfileByUserCode" resultType="com.kedu.firmware.DTO.UserProfileDTO">
+        SELECT 
+            p.user_profile_seq AS userProfileSeq,
+            p.user_seq AS userSeq,
+            p.phone_number AS phoneNumber,
+            p.address AS address,
+            p.zip_code AS zipCode,
+            p.detailed_address AS detailedAddress,
+            p.profile_picture_url AS profilePictureUrl,
+            e.rank_title AS rank,
+            e.employee_code AS employeeId,
+            e.employee_hire_date AS joinDate,
+            u.users_email AS email
+        FROM
+            user_profile p
+        JOIN
+            users u ON p.user_seq = u.users_seq
+        JOIN
+            employee e ON u.users_seq = e.user_seq
+        WHERE
+            u.users_code = #{userCode}
+    </select>
+
+    <!-- 사용자 ID로 프로필 정보를 가져오기 -->
+    <select id="getUserProfileById" resultType="com.kedu.firmware.DTO.UserProfileDTO">
+        SELECT * FROM user_profile WHERE user_profile_seq = #{userProfileSeq}
+    </select>
+
+    <!-- 사용자 코드로 사용자 ID 가져오기 -->
+    <select id="getUserSeqByUserCode" resultType="java.lang.Long">
+        SELECT users_seq FROM users WHERE users_code = #{userCode}
+    </select>
+
+    <!-- 프로필이 없는 사용자의 기본 정보 생성 -->
+    <insert id="insertUserProfile">
+        INSERT INTO user_profile (user_profile_seq, user_seq, phone_number, address, zip_code, detailed_address, profile_picture_url)
+        VALUES (user_profile_seq.NEXTVAL, #{userSeq}, #{phoneNumber,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{detailedAddress,jdbcType=VARCHAR}, #{profilePictureUrl,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 사용자 고유 번호로 프로필 정보를 가져오기 -->
+    <select id="getUserProfileByUserSeq" resultType="com.kedu.firmware.DTO.UserProfileDTO">
+        SELECT 
+            user_profile_seq AS userProfileSeq,
+            user_seq AS userSeq,
+            phone_number AS phoneNumber,
+            address AS address,
+            zip_code AS zipCode,
+            detailed_address AS detailedAddress,
+            profile_picture_url AS profilePictureUrl,
+            rank AS rank,
+            employee_id AS employeeId,
+            join_date AS joinDate
+        FROM
+            user_profile
+        WHERE
+            user_seq = #{userSeq}
+    </select>
+
+    <!-- 기존 프로필 정보 업데이트 -->
+    <update id="updateUserProfile">
+        UPDATE user_profile SET
+            phone_number = #{phoneNumber,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            zip_code = #{zipCode,jdbcType=VARCHAR},
+            detailed_address = #{detailedAddress,jdbcType=VARCHAR},
+            profile_picture_url = #{profilePictureUrl,jdbcType=VARCHAR},
+            rank = #{rank,jdbcType=VARCHAR},
+            employee_id = #{employeeId,jdbcType=VARCHAR},
+            join_date = #{joinDate,jdbcType=DATE}
+        WHERE user_profile_seq = #{userProfileSeq}
+    </update>
+
+    <!-- 프로필 정보 삭제입니다. -->
+    <delete id="deleteUserProfile">
+        DELETE FROM user_profile WHERE user_profile_seq = #{userProfileSeq}
+    </delete>
+    
+    <delete id="deleteUserProfileByUserSeq">
+    	DELETE FROM user_profile WHERE users_seq = #{usersSeq}
+	</delete>
+
+</mapper>

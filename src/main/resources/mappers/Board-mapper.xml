@@ -5,12 +5,17 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="board">
     <insert id="insert">
-        INSERT INTO board (board_seq, board_title, board_contents, board_write_date, board_view_count)
-        VALUES ( board_seq.nextval, #{board_title}, #{board_contents}, SYSDATE, 0)
+        INSERT INTO board (board_seq, board_title, board_contents, board_write_date, board_view_count, category_seq ,user_seq)
+        VALUES (board_seq.nextval, #{board_title}, #{board_contents}, SYSDATE, 0, #{category_seq} ,#{user_seq})
     </insert>
 
+
     <select id="selectAll" resultType="com.kedu.firmware.DTO.BoardDTO">
-        SELECT * FROM board ORDER BY board_write_date DESC
+        SELECT * FROM board where category_seq =#{category_seq} ORDER BY board_write_date DESC
+    </select>
+
+    <select id="seqSelectAll" resultType="com.kedu.firmware.DTO.BoardDTO">
+        SELECT * FROM board  category_seq =#{category_seq} ORDER BY board_write_date DESC
     </select>
 
     <select id="selectBySeq" parameterType="int" resultType="com.kedu.firmware.DTO.BoardDTO">
@@ -30,7 +35,10 @@
         WHERE board_seq = #{board_seq}
     </update>
 
-
-
+    <update id="incrementViewCount" >
+        UPDATE board
+        SET board_view_count = board_view_count + 1
+        WHERE board_seq = #{board_seq}
+    </update>
 
 </mapper>

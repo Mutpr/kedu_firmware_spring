@@ -13,16 +13,20 @@ import java.util.List;
 public class Board_ReplyService {
 
     @Autowired
+
     private Board_ReplyDAO board_ReplyDAO;
 
+    //입력
     public void post(Board_ReplyDTO dto) {
         board_ReplyDAO.insert(dto);
     }
 
+//    출력
     public List<Board_ReplyDTO> getBoard_ReplyList(int boardSeq) {
         return board_ReplyDAO.selectAll(boardSeq);
     }
 
+//    업데이트
     public int updateBySeq(Board_ReplyDTO dto ) {
         return board_ReplyDAO.updateBySeq(dto);
     }

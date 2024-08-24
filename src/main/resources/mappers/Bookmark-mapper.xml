@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bookmark">
+
+    <insert id="insert">
+        INSERT INTO bookmark (bookmark_seq, user_seq, board_seq)
+        VALUES (bookmark_seq.nextval, #{user_seq}, #{board_seq})
+    </insert>
+
+    <!-- 특정 사용자의 북마크 리스트 조회 쿼리 -->
+    <select id="getBookmarksByUsername" resultType="com.kedu.firmware.DTO.BookmarkDTO">
+        SELECT * FROM bookmark WHERE user_seq = (SELECT user_seq FROM users WHERE users_name = #{username})
+    </select>
+
+    <!-- 북마크 삭제 쿼리 -->
+    <delete id="delete">
+        DELETE FROM bookmark WHERE BOARD_SEQ = #{board_seq} AND USER_SEQ = #{user_seq}
+    </delete>
+
+    <!-- 특정 사용자와 게시물의 북마크 여부 확인 쿼리 -->
+    <select id="checkBookmark" resultType="int">
+        SELECT COUNT(*) FROM bookmark WHERE user_seq = #{user_seq} AND board_seq = #{board_seq}
+    </select>
+
+</mapper>

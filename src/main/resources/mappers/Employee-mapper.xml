@@ -57,5 +57,39 @@
     <delete id="deleteEmployee" parameterType="int">
         DELETE FROM employee WHERE employee_seq = #{employee_seq}
     </delete>
+    
+    <!-- 특정 사용자 시퀀스를 기반으로 직원 레코드를 삭제하는 쿼리 -->
+    <delete id="deleteByUserSeq" parameterType="int">
+        DELETE FROM employee WHERE user_seq = #{user_seq}
+    </delete>
+
+
+<!-- 전체 직원을 조회하는 쿼리 -->
+<select id="selectAllEmployees" resultType="com.kedu.firmware.DTO.EmployeeDTO">
+    SELECT 
+        e.employee_seq, 
+        e.user_seq, 
+        e.department_seq, 
+        d.department_title, 
+        e.unit_seq, 
+        u.unit_title, 
+        e.rank_seq, 
+        r.rank_title, 
+        us.users_name, 
+        e.employee_code, 
+        e.employee_hire_date, 
+        e.employee_leave_date, 
+        e.is_employee_validate
+    FROM 
+        employee e
+    JOIN 
+        department d ON e.department_seq = d.department_seq
+    JOIN 
+        unit u ON e.unit_seq = u.unit_seq
+    JOIN 
+        rank r ON e.rank_seq = r.rank_seq
+    JOIN 
+        users us ON e.user_seq = us.users_seq
+</select>
 
 </mapper>

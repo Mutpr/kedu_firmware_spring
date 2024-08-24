@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Calendar">
+
+    <resultMap id="CalendarResultMap" type="com.kedu.firmware.DTO.CalendarDTO">
+        <id property="calendarsSeq" column="calendars_seq"/>
+        <result property="usersSeq" column="users_seq"/>
+        <result property="calendarsCode" column="calendars_code"/>
+        <result property="calendarsName" column="calendars_name"/>
+        <result property="calendarsColor" column="calendars_color"/>
+        <result property="calendarsIsInterest" column="calendars_is_interest"/>
+        <result property="calendarsCreatedAt" column="calendars_created_at"/>
+        <result property="calendarsUpdatedAt" column="calendars_updated_at"/>
+    </resultMap>
+
+    <select id="getCalendarById" parameterType="long" resultMap="CalendarResultMap">
+        SELECT * FROM Calendars WHERE calendars_seq = #{calendarsSeq,jdbcType=BIGINT}
+    </select>
+
+    <select id="getAllCalendars" resultMap="CalendarResultMap">
+        SELECT * FROM Calendars
+    </select>
+
+    <insert id="insertCalendar" parameterType="com.kedu.firmware.DTO.CalendarDTO">
+        INSERT INTO Calendars (calendars_seq, users_seq, calendars_code, calendars_name, calendars_color, calendars_is_interest, calendars_created_at, calendars_updated_at)
+        VALUES (calendars_seq.NEXTVAL, 
+        #{usersSeq,jdbcType=BIGINT}, #{calendarsCode,jdbcType=VARCHAR}, #{calendarsName,jdbcType=VARCHAR}, 
+        #{calendarsColor,jdbcType=VARCHAR}, #{calendarsIsInterest,jdbcType=CHAR},
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateCalendar" parameterType="com.kedu.firmware.DTO.CalendarDTO">
+        UPDATE Calendars SET
+        users_seq = #{usersSeq,jdbcType=BIGINT},
+        calendars_code = #{calendarsCode,jdbcType=VARCHAR},
+        calendars_name = #{calendarsName,jdbcType=VARCHAR},
+        calendars_color = #{calendarsColor,jdbcType=VARCHAR},
+        calendars_is_interest = #{calendarsIsInterest,jdbcType=CHAR},
+        calendars_updated_at = CURRENT_TIMESTAMP
+        WHERE calendars_seq = #{calendarsSeq,jdbcType=BIGINT}
+    </update>
+
+    <!-- 이벤트 삭제 쿼리 추가 -->
+    <delete id="deleteEventsByCalendarSeq" parameterType="long">
+        DELETE FROM Events WHERE calendars_seq = #{calendarsSeq,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteCalendar" parameterType="long">
+        DELETE FROM Calendars WHERE calendars_seq = #{calendarsSeq,jdbcType=BIGINT}
+    </delete>
+
+    <select id="exists" parameterType="long" resultType="int">
+        SELECT COUNT(1) FROM Calendars WHERE calendars_seq = #{calendarsSeq}
+    </select>
+
+</mapper>

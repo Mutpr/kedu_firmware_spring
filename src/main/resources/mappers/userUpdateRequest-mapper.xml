@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserUpdateRequest">
+
+    <!-- 결과 매핑 정의 SQL 쿼리 결과를 UserUpdateRequestDTO Java 객체에 매핑 -->
+    <resultMap id="UserUpdateRequestMap" type="com.kedu.firmware.DTO.UserUpdateRequestesDTO">
+        <result property="usersUpdateRequestSeq" column="USERS_UPDATE_REQUEST_SEQ"/>
+        <result property="usersSeq" column="USERS_SEQ"/>
+        <result property="phoneNumber" column="PHONE_NUMBER"/>
+        <result property="email" column="EMAIL"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="zipCode" column="ZIP_CODE"/>
+        <result property="detailedAddress" column="DETAILED_ADDRESS"/>
+        <result property="requestReason" column="REQUEST_REASON"/>
+        <result property="requestStatus" column="REQUEST_STATUS"/>
+        <result property="requestTimestamp" column="REQUEST_TIMESTAMP"/>
+        <result property="profileImage" column="PROFILE_IMAGE"/>
+        <result property="rank" column="RANK"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+        <result property="joinDate" column="JOIN_DATE"/>
+        <result property="approver" column="APPROVER"/>
+    </resultMap>
+
+    <!-- 특정 ID로 사용자 업데이트 요청 가져오기 users_update_request_seq 값으로 사용자를 조회 -->
+    <select id="getUserUpdateRequestById" resultMap="UserUpdateRequestMap">
+        SELECT * FROM users_update_requests WHERE users_update_request_seq = #{usersUpdateRequestSeq,jdbcType=NUMERIC}
+    </select>
+
+    <!-- 모든 사용자 업데이트 요청 가져오기 -->
+    <select id="getAllUserUpdateRequests" resultMap="UserUpdateRequestMap">
+        SELECT * FROM users_update_requests
+    </select>
+    
+    <!-- 특정 사용자 시퀀스로 사용자 업데이트 요청 가져오기 users_seq 값으로 사용자를 조회 -->
+    <select id="getUserUpdateRequestByUserSeq" resultMap="UserUpdateRequestMap">
+        SELECT * FROM users_update_requests WHERE users_seq = #{usersSeq,jdbcType=NUMERIC}
+    </select>
+    
+    <!-- 사용자 업데이트 요청 삽입 -->
+    <insert id="insertUserUpdateRequest">
+        INSERT INTO users_update_requests (
+            users_update_request_seq, 
+            users_seq, 
+            phone_number, 
+            email, 
+            address, 
+            zip_code,  
+            detailed_address,  
+            request_reason, 
+            request_status, 
+            request_timestamp,
+            profile_image,  
+            rank,  
+            employee_id,  
+            join_date,  
+            approver  
+        )
+        VALUES (
+            users_update_request_seq.NEXTVAL, 
+            #{usersSeq,jdbcType=NUMERIC}, 
+            #{phoneNumber,jdbcType=VARCHAR}, 
+            #{email,jdbcType=VARCHAR}, 
+            #{address,jdbcType=VARCHAR}, 
+            #{zipCode,jdbcType=VARCHAR},  
+            #{detailedAddress,jdbcType=VARCHAR},  
+            #{requestReason,jdbcType=VARCHAR}, 
+            #{requestStatus,jdbcType=VARCHAR}, 
+            #{requestTimestamp,jdbcType=TIMESTAMP}, 
+            #{profileImage,jdbcType=VARCHAR},  
+            #{rank,jdbcType=VARCHAR},  
+            #{employeeId,jdbcType=VARCHAR},  
+            #{joinDate,jdbcType=TIMESTAMP}, 
+            #{approver,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 사용자 업데이트 요청 수정 -->
+    <update id="updateUserUpdateRequest">
+        UPDATE users_update_requests SET
+            users_seq = #{usersSeq,jdbcType=NUMERIC},
+            phone_number = #{phoneNumber,jdbcType=VARCHAR},
+            email = #{email,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            zip_code = #{zipCode,jdbcType=VARCHAR}, 
+            detailed_address = #{detailedAddress,jdbcType=VARCHAR}, 
+            request_reason = #{requestReason,jdbcType=VARCHAR},
+            request_status = #{requestStatus,jdbcType=VARCHAR},
+            request_timestamp = #{requestTimestamp,jdbcType=TIMESTAMP},
+            profile_image = #{profileImage,jdbcType=VARCHAR},
+            rank = #{rank,jdbcType=VARCHAR},
+            employee_id = #{employeeId,jdbcType=VARCHAR},
+            join_date = #{joinDate,jdbcType=TIMESTAMP},
+            approver = #{approver,jdbcType=VARCHAR}
+        WHERE users_update_request_seq = #{usersUpdateRequestSeq,jdbcType=NUMERIC}
+    </update>
+
+    <!-- 특정 사용자 업데이트 요청을 삭제하는 메서드 -->
+    <delete id="deleteUserUpdateRequest">
+        DELETE FROM users_update_requests WHERE users_update_request_seq = #{usersUpdateRequestSeq,jdbcType=NUMERIC}
+    </delete>
+
+    <!-- 추가된 메서드: 특정 사용자 시퀀스로 모든 사용자 업데이트 요청을 삭제 -->
+    <delete id="deleteUserUpdateRequestsByUserSeq">
+        DELETE FROM users_update_requests WHERE users_seq = #{usersSeq,jdbcType=NUMERIC}
+    </delete>
+
+</mapper>

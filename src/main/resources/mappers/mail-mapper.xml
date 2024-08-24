@@ -19,28 +19,62 @@
     </select>
   	
   	<!-- 모든 메일함의 첫번째 메일 목록 가져오기 -->
-  	<!-- 본인이 작성하거나, 받은 메일만 목록에서 확인 -->
-  	<select id="selectAll" resultType="com.kedu.firmware.DTO.MailDTO">
-		  		SELECT m.* 
-		FROM mail m 
-		INNER JOIN mail_carbon_copy mcc ON m.mail_seq = mcc.mail_seq
-		INNER JOIN users u ON u.users_email = mcc.mail_carbon_copy_receiver
-		WHERE m.mail_seq = (
-		  SELECT MIN(mail_seq) 
-		  FROM mail 
-		  WHERE mailbox_seq = m.mailbox_seq
-		)
-		AND (m.mail_sender_user_seq = (SELECT users_seq FROM users WHERE users_email = #{Email})
-		OR mcc.mail_carbon_copy_receiver = #{Email})
-		ORDER BY m.mail_seq DESC
+	<!-- 본인이 작성하거나, 받은 메일만 목록에서 확인 -->
+	<select id="selectAll" resultType="com.kedu.firmware.DTO.MailDTO">
+        SELECT 
+            m.*, 
+            u_sender.users_name AS sender_name,
+            CASE 
+                WHEN (SELECT COUNT(*) FROM mail_attachment ma WHERE ma.mail_seq = m.mail_seq) > 0 
+                THEN 1 
+                ELSE 0 
+            END AS has_attachments  <!-- 첨부 파일 여부를 나타내는 컬럼 추가 -->
+        FROM 
+            mail m
+        INNER JOIN 
+            mail_carbon_copy mcc ON m.mail_seq = mcc.mail_seq
+        INNER JOIN 
+            users u ON u.users_email = mcc.mail_carbon_copy_receiver
+        INNER JOIN 
+            users u_sender ON m.mail_sender_user_seq = u_sender.users_seq
+        WHERE 
+            m.mail_seq = (
+                SELECT MIN(mail_seq)
+                FROM mail
+                WHERE mailbox_seq = m.mailbox_seq
+            )
+            AND 
+            (m.mail_sender_user_seq = (SELECT users_seq FROM users WHERE users_email = #{Email})
+            OR mcc.mail_carbon_copy_receiver = #{Email})
+        ORDER BY 
+            m.mail_seq DESC
+    </select>
 
-  	</select>
   	
-  	<select id="selectBySeq" resultType="com.kedu.firmware.DTO.MailDTO">
-  		select * from mail where mailbox_seq = (
-  			select mailbox_seq from mail where mail_seq = #{mail_seq}
-  		) order by 1 desc
-  	</select>
+	<select id="selectBySeq" resultType="com.kedu.firmware.DTO.MailDTO">
+	    select 
+	        m.*, 
+	        u.users_name as sender_name, 
+	        u.users_email as sender_email,
+	        ud.department_title as sender_department_name,
+	        c.mail_carbon_copy_receiver as receiver_email,
+	        ru.users_name as receiver_name,
+	        rd.department_title as receiver_department_name,
+	        c.carbon_copy_type as copyType
+	    from mail m
+		    join users u on m.mail_sender_user_seq = u.users_seq
+		    join department ud on u.department_code = ud.department_code
+		    left join mail_carbon_copy c on m.mail_seq = c.mail_seq
+		    left join users ru on c.mail_carbon_copy_receiver = ru.users_email
+		    left join department rd on ru.department_code = rd.department_code
+	    where m.mailbox_seq = (
+	        select mailbox_seq from mail where mail_seq = #{mail_seq}
+	    )
+	    order by m.mail_received_date desc
+	</select>
+
+
+
   	
   	<delete id="deleteSelectedMail">
   		delete from mail where mail_seq = #{mail_seq}

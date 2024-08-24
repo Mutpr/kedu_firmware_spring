@@ -2,6 +2,9 @@ package com.kedu.firmware.services;
 
 import com.kedu.firmware.DAO.EmployeeDAO;
 import com.kedu.firmware.DTO.EmployeeDTO;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +32,11 @@ public class EmployeeService {
     // 직원 고유 번호를 통해 직원 삭제
     public void deleteEmployee(int employeeSeq) {
         employeeDAO.delete(employeeSeq);
+    }
+    
+    
+ // EmployeeService에서 호출된 전체 직원 정보를 반환하는 메소드
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeDAO.selectAllEmployees();  // employeeMapper 호출 -> employeeDAO로 변경
     }
 }

@@ -1,5 +1,7 @@
 package com.kedu.firmware.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,4 +74,11 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사원 삭제 실패");
         }
     }
+    
+ // 직원 정보를 전체 조회하는 API 엔드포인트
+    @GetMapping("/all")
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeService.getAllEmployees();
+    }
+    
 }
