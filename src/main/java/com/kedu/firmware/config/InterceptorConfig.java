@@ -12,7 +12,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	
 	@Autowired
 	private LoginValidator loginValidator;
-	
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {

@@ -1,5 +1,15 @@
 package com.kedu.firmware.services;
 
+import com.kedu.firmware.DAO.UserProfileDAO;
+import com.kedu.firmware.DAO.UserUpdateRequestesDAO;
+import com.kedu.firmware.DTO.UserProfileDTO;
+import com.kedu.firmware.DTO.UserUpdateRequestesDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,17 +18,6 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.kedu.firmware.DAO.UserProfileDAO;
-import com.kedu.firmware.DAO.UserUpdateRequestesDAO;
-import com.kedu.firmware.DTO.UserProfileDTO;
-import com.kedu.firmware.DTO.UserUpdateRequestesDTO;
 
 @Service
 public class UserUpdateRequestesService {
@@ -163,6 +162,6 @@ public class UserUpdateRequestesService {
         Files.createDirectories(filePath.getParent());
         Files.write(filePath, file.getBytes());
 
-        return serverUrl + "/uploads/" + fileName;
+        return serverUrl + "/images/" + fileName;
     }
 }

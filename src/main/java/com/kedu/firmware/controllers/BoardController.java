@@ -2,6 +2,7 @@ package com.kedu.firmware.controllers;
 
 import com.kedu.firmware.DTO.BoardDTO;
 import com.kedu.firmware.DTO.Board_CategoryDTO;
+import com.kedu.firmware.DTO.UsersDTO;
 import com.kedu.firmware.services.BoardService;
 import com.kedu.firmware.services.Board_CategoryService;
 import com.kedu.firmware.services.UsersService;
@@ -35,7 +36,6 @@ public class BoardController {
         // 세션에서 loginID를 가져옴
         String loginID = (String) session.getAttribute("loginID");
 
-
         if (loginID == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 로그인되어 있지 않으면 Unauthorized 응답
         }
@@ -43,19 +43,17 @@ public class BoardController {
         // loginID를 사용자 ID로 변환
         // 예를 들어, loginID가 사용자 코드이고 이를 정수형 ID로 변환해야 한다면:\
 
-        //loginID가 어떻게 int로 바뀜 string인데, loginID가 user_code잖아
+        //loginID가 어떻게 int로 바뀜 string인데, loginID가 user_code잖아 ??? 여기 코드 이상하잖음.
+
         int userSeq;
         try {
-            userSeq = Integer.parseInt(loginID); // 문자열을 정수형으로 변환
+            userSeq = usersService.findUserByCode(loginID).getUsers_seq();
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 변환 실패 시 Unauthorized 응답
         }
 
         // 변환된 userSeq를 DTO에 설정
         dto.setUser_seq(userSeq);
-
-        int user_Seq = usersService.findUserByCode(loginID).getUsers_seq();
-
 
         boardService.post(dto);
         return ResponseEntity.ok().build();
@@ -78,7 +76,7 @@ public class BoardController {
         if (usersDto == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 사용자 정보가 없으면 Unauthorized 응답
         }
-        int user_seq = usersDto.getUsers_seq();
+        int user_seq = ((UsersDTO) usersDto).getUsers_seq();
 
         List<BoardDTO> boardDTOList = board_categoryService.getPostsByCategory(seq, user_seq );
         return ResponseEntity.ok(boardDTOList);
@@ -128,7 +126,7 @@ public class BoardController {
         // loginID를 사용자 ID로 변환
         int userSeq;
         try {
-            userSeq = Integer.parseInt(loginID); // 문자열을 정수형으로 변환
+            userSeq = usersService.findUserByCode(loginID).getUsers_seq(); // 문자열을 정수형으로 변환
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 변환 실패 시 Unauthorized 응답
         }

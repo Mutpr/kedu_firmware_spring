@@ -23,10 +23,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 업로드된 파일을 서빙하기 위한 핸들러
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///absolute/path/to/upload/directory/");
+                .addResourceLocations("file:///C:/Apache24/htdocs/files");
         
         // C:/images/ 디렉토리의 파일을 서빙하기 위한 핸들러
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:///C:/images/");
+                .addResourceLocations("file:///C:/Apache24/htdocs/images");
     }
 }

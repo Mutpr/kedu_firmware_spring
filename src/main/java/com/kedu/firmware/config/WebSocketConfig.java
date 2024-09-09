@@ -16,15 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(getChatHandler(), "/ws/chat")
-                .setAllowedOrigins(
-                    "http://192.168.1.11:3000",
-                    "http://192.168.1.10:3000",
-                    "http://192.168.1.36:3000",
-                    "http://192.168.1.172:3000",
-                    "http://192.168.1.43:3000",
-                    "http://172.30.1.29:3000",
-                    "http://localhost:3000"
-                )
+                .setAllowedOriginPatterns("*")
                 .addInterceptors(new HttpSessionInterceptor());
     }
 
@@ -33,3 +25,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
         return new ChatWebSocketHandler();
     }
 }
+
+
+//.setAllowedOrigins(
+//                    "http://192.168.1.11:3000",
+//                            "http://192.168.1.10:3000",
+//                            "http://192.168.1.36:3000",
+//                            "http://192.168.1.172:3000",
+//                            "http://192.168.1.43:3000",
+//                            "http://172.30.1.29:3000",
+//                            "http://localhost:3000"
+//)

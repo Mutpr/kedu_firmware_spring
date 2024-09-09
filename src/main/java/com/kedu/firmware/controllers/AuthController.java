@@ -1,17 +1,21 @@
 package com.kedu.firmware.controllers;
 
+import com.kedu.firmware.DTO.AuthDTO;
+import com.kedu.firmware.DTO.UsersDTO;
+import com.kedu.firmware.services.AuthService;
+import com.kedu.firmware.services.UsersService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.kedu.firmware.DTO.UsersDTO;
-import com.kedu.firmware.services.UsersService;
-import jakarta.servlet.http.HttpSession;
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private UsersService usersService;
@@ -51,5 +55,28 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpSession session) {
         session.invalidate();  
         return ResponseEntity.ok().build();  
+    }
+
+    @GetMapping("/vaildation")
+    public ResponseEntity<Void> vaildation(
+            @RequestParam int usersSeq,
+            @RequestParam String loginID,
+            @RequestParam String usersName,
+            @RequestParam String employeeId,
+            @RequestParam String rank,
+            @RequestParam String isAdmin
+        ) {
+
+        int is_admin = isAdmin.equals("true") ? 1 : 0;
+        System.out.println("AuthTest1");
+        AuthDTO authDTO = new AuthDTO(usersSeq, loginID, usersName, employeeId, rank, is_admin);
+        boolean result = authService.validation(authDTO);
+        System.out.println("AuthTest : " + result);
+
+        if (result) {
+            return ResponseEntity.ok(null);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 }

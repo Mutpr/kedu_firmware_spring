@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="auth">
+    <select id="getAccount" resultType="java.lang.Boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM USERS A
+        LEFT JOIN USER_PROFILE B ON A.USERS_SEQ = B.USER_SEQ
+        WHERE
+        A.USERS_SEQ = #{usersSeq}
+        AND A.USERS_CODE = #{loginID}
+        AND A.USERS_NAME = #{usersName}
+        AND B.EMPLOYEE_ID = #{employeeId}
+        AND B.RANK = #{rank}
+        AND A.USERS_IS_ADMIN = #{isAdmin}
+    </select>
+</mapper>
